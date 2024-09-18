@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Regex Query Tool</title>
+    <style>
+        body {
+            background: linear-gradient(135deg, #6a1b9a, #8e24aa); /* Gradient purple background */
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 500px; /* Increased form box width */
+            margin: 80px auto;
+            padding: 40px;
+            background-color: #fff; /* White background */
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1); /* Subtle shadows */
+        }
+        h1 {
+            text-align: center;
+            color: #215CA0;
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+        form {
+            margin-bottom: 30px;
+        }
+        label {
+            display: block;
+            font-size: 16px;
+            margin-bottom: 8px;
+        }
+        input[type="text"], input[type="file"], textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+            margin-bottom: 15px;
+        }
+        button {
+            display: block;
+            width: 100%;
+            padding: 12px;
+            background-color: #6a1b9a; /* Purple button background */
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            margin-bottom: 10px;
+        }
+        button:hover {
+            background-color: #4a148c; /* Slightly darker purple */
+        }
+        .download-buttons {
+            margin: 20px 0;
+        }
+        ul {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+        }
+        li {
+            background-color: #f8f9fa;
+            margin-bottom: 10px;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+        }
+        .no-matches {
+            color: #888;
+            text-align: center;
+        }
+        .matches-section {
+            margin-bottom: 30px;
+        }
+        .section-title {
+            font-size: 20px;
+            color: #495057;
+            margin-bottom: 15px;
+            text-align: left;
+        }
+        .pattern-list {
+            margin-bottom: 20px;
+        }
+        .pattern-list h2 {
+            font-size: 18px;
+            color: #495057;
+            margin-bottom: 10px;
+        }
+        .pattern-list pre {
+            background-color: #f8f9fa;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 10px;
+            overflow-x: auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Regex Query Tool</h1>
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <label for="pattern">Regex Pattern:</label>
+            {{ form.pattern }}
+            
+            <label for="text">Text to Search Within:</label>
+            {{ form.text }}
+            
+            <label for="upload_file">Upload File (optional):</label>
+            {{ form.upload_file }}
+
+            <button type="submit">Submit Query</button>
+        </form>
+        {% if not matches %} 
+        <div class="no-matches"> 
+        </div> 
+            <div class="pattern-list">
+                <h2>Available Regex Patterns:</h2>
+                <pre>
+1. Email Address:
+   \b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}\b
+
+2. URL (HTTP/HTTPS):
+   \b(https?://[^\s/$.?#].[^\s]*)\b
+
+3. IPv4 Address:
+   \b((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\b
+
+4. Phone Number (US Format):
+   \b\+?1?\d{10}\b
+
+5. Date in YYYY-MM-DD Format:
+   \b\d{4}-\d{2}-\d{2}\b
+
+6. Time in HH:MM:SS Format:
+   \b([01]?[0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]\b
+
+7. Credit Card Number (with optional hyphens):
+   \b\d{4}-?\d{4}-?\d{4}-?\d{4}\b
+
+8. Postal Code (ZIP Code) (US):
+   \b\d{5}(-\d{4})?\b
+
+9. Hexadecimal Color Code:
+   \b#([0-9a-fA-F]{6}|[0-9a-fA-F]{3})\b
+
+10. Username (alphanumeric and underscores, 3-16 characters):
+    \b[A-Za-z0-9_]{3,16}\b
+                </pre>
+            </div>
+        {% endif %}
+
+        {% if matches %}
+            <div class="matches-section">
+                <h2 class="section-title">Matches in Text:</h2>
+                <ul>
+                    {% for match in matches %}
+                        <li>{{ match }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+
+            <div class="download-buttons">
+                <form method="post" action="{% url 'download_csv' %}">
+                    {% csrf_token %}
+                    <button type="submit">Download CSV</button>
+                </form>
+                <form method="post" action="{% url 'download_pdf' %}">
+                    {% csrf_token %}
+                    <button type="submit">Download PDF</button>
+                </form>
+            </div>
+        {% endif %}
+    </div>
+</body>
+</html>
