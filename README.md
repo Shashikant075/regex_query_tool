@@ -32,7 +32,7 @@ To set up the Regex Query Tool, follow these steps:
 1. Clone the repository to your local machine.
 
 ```bash
-git clone git clone https://github.com/Shashikanttt/Regex-Query-Tool.git
+git clone  https://github.com/Shashikanttt/Regex-Query-Tool.git
 ```
 
 2. Go to the project directory
